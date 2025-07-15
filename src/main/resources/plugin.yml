@@ -1,0 +1,17 @@
+name: IPViewer
+version: '1.0.0'
+main: org.mousejava.ipviewer.IPViewer
+api-version: '1.20'
+authors: [ MouseJava ]
+description: Plugin for management IP address
+commands:
+  ipviewer:
+    description: This command allows you to use the plugin
+    permission: ipviewer.ipviewer
+    usage: /<command> <args>
+    aliases:
+      - ipv
+permissions:
+  ipviewer.ipviewer:
+    description: Permission to use command ipviewer
+    default: op

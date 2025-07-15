@@ -1,0 +1,30 @@
+# Plugin version 1.0.0
+
+messages:
+  error: '<color:#ff5555>Error!</color>'
+  error_loading_message: '<color:#ff5555>Error loading message templates</color>'
+  unknown_subcommand: '<color:#c4b6a4>Unknown command</color>'
+
+  help_message: "<color:#fbd300>IPViewer</color> <color:#4de1ff><hover:show_text:'Copy version'>%version%</hover></color>"
+  command_template: '<color:#fbd300>Command:</color> <color:#c4b6a4><b>%command%<b></color>'
+
+  config_reload_successfully: '<color:#fbd300>Plugin successfully reloaded</color>'
+
+  correct_page_number: '<color:#fbd300>Please enter a valid page number (an integer greater than 0)</color>'
+  invalid_time_format: '<color:#fbd300>Invalid time format entered (use integer and <s, m, h, d, w>)</color>'
+  no_entries_on_page: '<color:#fbd300>There are no posts on this page</color>'
+
+  time_sign: '⌚'
+
+  list_player_template: "<color:#fbd300>List of players and IP:</color>%players%<br><color:#fbd300><hover:show_text:'Prev page'><click:run_command:'/ipv list %prev_page%'>◀</click></hover> Page %current%/%total% <hover:show_text:'Next page'><click:run_command:'/ipv list %next_page%'>▶</click></hover></color> <color:#c4b6a4>To view a page, type</color> <color:#fbd300><hover:show_text:'/ipv list'><click:suggest_command:'/ipv list '>/ipv list <filters></click></hover></color>"
+  player_ip_template: "<br><color:#4de1ff>%number%.</color> <color:#fbd300><hover:show_text:'%time%'>%time_sign%</hover></color> <color:#c4b6a4><hover:show_text:'Copy nickname'>%player%</hover>: <hover:show_text:'Copy IP'>%ip%</hover> (<hover:show_text:'Copy country name'>%country%</hover>, <hover:show_text:'Copy state/city name'>%state%</hover>)</color>"
+
+  description:
+    help: '<color:#fbd300>Description:</color> <color:#c4b6a4>outputs a list of commands</color>'
+    reload: '<color:#fbd300>Description:</color> <color:#c4b6a4>reloads the plugin config</color>'
+    list: '<color:#fbd300>Description:</color> <color:#c4b6a4>allows you to view the list of players</color>'
+
+  usage:
+    help: "<color:#fbd300>Usage:</color> <color:#c4b6a4><hover:show_text:'/ipv help'><click:suggest_command:'/ipv help'>/ipv help</click></hover></color>"
+    reload: "<color:#fbd300>Usage:</color> <color:#c4b6a4><hover:show_text:'/ipv reload'><click:suggest_command:'/ipv reload'>/ipv reload</click></hover></color>"
+    list: "<color:#fbd300>Usage:</color> <color:#c4b6a4><hover:show_text:'/ipv list'><click:suggest_command:'/ipv list '>/ipv list <filters (optional)></click></hover></color>"
