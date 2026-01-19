@@ -12,6 +12,8 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ListSubCommand implements SubCommand {
     private final DatabaseDriver dbDriver;
@@ -41,22 +43,56 @@ public class ListSubCommand implements SubCommand {
     public void execute(CommandSender sender, String[] args) {
         Map<String, String> filters = new HashMap<>();
         int page = 1;
+        Integer pageFromFilter = null;
 
-        for (String arg : args) {
-            if (arg.contains(":")) {
-                String[] split = arg.split(":", 2);
-                if (split.length == 2) {
-                    filters.put(split[0].toLowerCase(), split[1]);
-                }
-            } else {
-                try {
-                    page = Integer.parseInt(arg);
-                    if (page <= 0) throw new NumberFormatException();
-                } catch (NumberFormatException e) {
-                    MessageUtils.sendMiniMessageIfPresent(sender, "messages.correct_page_number");
-                    return;
-                }
+        String joined = String.join(" ", args);
+        Pattern pattern = Pattern.compile("(\\w+):(\"[^\"]+\"|\\S+)");
+        Matcher matcher = pattern.matcher(joined);
+
+        while (matcher.find()) {
+            String key = matcher.group(1).toLowerCase();
+            String value = matcher.group(2);
+
+            boolean wasQuoted = false;
+
+            if (value.startsWith("\"") && value.endsWith("\"")) {
+                wasQuoted = true;
+                value = value.substring(1, value.length() - 1);
             }
+
+            if (!wasQuoted) {
+                value = value.replace("+", " ");
+            }
+
+            if (key.equals("page")) {
+                try {
+                    int parsed = Integer.parseInt(value);
+                    if (parsed > 0) {
+                        pageFromFilter = parsed;
+                    }
+                } catch (NumberFormatException ignored) {}
+                continue;
+            }
+
+            filters.put(key, value);
+        }
+
+        String remaining = matcher.replaceAll("").trim();
+
+        if (!remaining.isEmpty()) {
+            try {
+                int parsedPage = Integer.parseInt(remaining);
+                if (parsedPage > 0) {
+                    page = parsedPage;
+                } else {
+                    throw new NumberFormatException();
+                }
+            } catch (NumberFormatException e) {
+                MessageUtils.sendMiniMessageIfPresent(sender, "messages.correct_page_number");
+                return;
+            }
+        } else if (pageFromFilter != null) {
+            page = pageFromFilter;
         }
 
         List<Object> filterParams = new ArrayList<>();

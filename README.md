@@ -60,6 +60,12 @@ Filters that use text (`player`, `ip`, `country`, `state`) support SQL-style wil
 * `%` - Matches any sequence of characters
 * `_` - Matches a single character
 
+You can also use spaces in filter values:
+* Replace spaces with `+` - `country:United+States`
+* Wrap the value in quotes - `state:"New York"`
+
+When quotes are used, `+` characters are preserved as written.
+
 ### 📌 Example
 
 ```
