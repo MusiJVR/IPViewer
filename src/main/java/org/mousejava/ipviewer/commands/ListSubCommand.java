@@ -13,7 +13,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-public class ListSubCommand implements TabCompletableSubCommand {
+public class ListSubCommand implements SubCommand {
     private final DatabaseDriver dbDriver;
 
     private static final int PAGE_SIZE = 10;

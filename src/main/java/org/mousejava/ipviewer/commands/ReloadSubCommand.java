@@ -4,9 +4,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.mousejava.ipviewer.utils.MessageUtils;
 
-import java.util.List;
-
-public class ReloadSubCommand implements TabCompletableSubCommand {
+public class ReloadSubCommand implements SubCommand {
     private final JavaPlugin plugin;
 
     public ReloadSubCommand(JavaPlugin plugin) {
@@ -38,10 +36,5 @@ public class ReloadSubCommand implements TabCompletableSubCommand {
 
         plugin.reloadConfig();
         MessageUtils.sendMiniMessageIfPresent(sender, "messages.config_reload_successfully");
-    }
-
-    @Override
-    public List<String> onTabComplete(CommandSender sender, String[] args) {
-        return List.of();
     }
 }

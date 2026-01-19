@@ -6,9 +6,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.mousejava.ipviewer.utils.MessageUtils;
 
-import java.util.List;
-
-public class HelpSubCommand implements TabCompletableSubCommand {
+public class HelpSubCommand implements SubCommand {
     private final JavaPlugin plugin;
 
     public HelpSubCommand(JavaPlugin plugin) {
@@ -52,10 +50,5 @@ public class HelpSubCommand implements TabCompletableSubCommand {
             cmd.sendDescription(sender);
             cmd.sendUsage(sender);
         }
-    }
-
-    @Override
-    public List<String> onTabComplete(CommandSender sender, String[] args) {
-        return List.of();
     }
 }
