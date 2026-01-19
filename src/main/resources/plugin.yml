@@ -1,7 +1,8 @@
 name: IPViewer
-version: '1.0.0'
+version: '${project.version}'
 main: org.mousejava.ipviewer.IPViewer
 api-version: '1.20'
+folia-supported: true
 authors: [ MouseJava ]
 description: Plugin for management IP address
 commands:

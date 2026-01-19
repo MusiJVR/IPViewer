@@ -1,9 +1,20 @@
 package org.mousejava.ipviewer.utils;
 
 import org.mousejava.ipviewer.IPViewer;
+import org.mousejava.ipviewer.scheduler.Scheduler;
 
-import java.sql.*;
-import java.util.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.StringJoiner;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 
 public class DatabaseDriver {
@@ -25,7 +36,15 @@ public class DatabaseDriver {
         }
     }
 
+    private void runAsync(Runnable task) {
+        Scheduler.runAsync(task);
+    }
+
     public void createTable(String table, String... columns) {
+        runAsync(() -> createTableSync(table, columns));
+    }
+
+    private void createTableSync(String table, String... columns) {
         StringBuilder query = new StringBuilder(String.format("CREATE TABLE IF NOT EXISTS %s (", table));
 
         for (int i = 0; i < columns.length; i++) {
@@ -40,7 +59,13 @@ public class DatabaseDriver {
         }
     }
 
-    public List<Map<String, Object>> selectData(String columns, String table, String condition, Object... parameters) {
+    public void selectData(String columns, String table, String condition, Consumer<List<Map<String, Object>>> callback, Object... parameters) {
+        runAsync(() -> Scheduler.run(() ->
+                callback.accept(selectDataSync(columns, table, condition, parameters))
+        ));
+    }
+
+    private List<Map<String, Object>> selectDataSync(String columns, String table, String condition, Object... parameters) {
         StringBuilder query = new StringBuilder(String.format("SELECT %s FROM %s", columns, table));
 
         if (condition != null && !condition.trim().isEmpty()) query.append(" ").append(condition).append(";");
@@ -58,6 +83,10 @@ public class DatabaseDriver {
     }
 
     public void insertData(String table, Map<String, Object> parameters) {
+        runAsync(() -> insertDataSync(table, parameters));
+    }
+
+    private void insertDataSync(String table, Map<String, Object> parameters) {
         if (parameters == null || parameters.isEmpty()) throw new IllegalArgumentException("Parameters cannot be null or empty.");
 
         StringBuilder query = new StringBuilder(String.format("INSERT INTO %s (", table));
@@ -81,6 +110,10 @@ public class DatabaseDriver {
     }
 
     public void updateData(String table, Map<String, Object> parameters, String condition, Object... conditionParameters) {
+        runAsync(() -> updateDataSync(table, parameters, condition, conditionParameters));
+    }
+
+    private void updateDataSync(String table, Map<String, Object> parameters, String condition, Object... conditionParameters) {
         if (parameters == null || parameters.isEmpty()) throw new IllegalArgumentException("Parameters cannot be null or empty.");
 
         StringBuilder query = new StringBuilder(String.format("UPDATE %s SET ", table));
@@ -105,6 +138,10 @@ public class DatabaseDriver {
     }
 
     public void deleteData(String table, String condition, Object... parameters) {
+        runAsync(() -> deleteDataSync(table, condition, parameters));
+    }
+
+    private void deleteDataSync(String table, String condition, Object... parameters) {
         if (condition == null || condition.trim().isEmpty()) throw new IllegalArgumentException("Condition cannot be null or empty.");
 
         StringBuilder query = new StringBuilder(String.format("DELETE FROM %s WHERE %s;", table, condition));

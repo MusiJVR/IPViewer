@@ -131,98 +131,92 @@ public class ListSubCommand implements TabCompletableSubCommand {
         queryParams.add(offset);
         List<Object> countParams = new ArrayList<>(filterParams);
 
-        List<Map<String, Object>> players = dbDriver.selectData(
-                "nickname, ip, country, state, last_join",
-                "players",
-                "%s ORDER BY nickname ASC LIMIT ? OFFSET ?".formatted(where),
-                queryParams.toArray()
-        );
-
-        if (players.isEmpty()) {
-            MessageUtils.sendMiniMessageIfPresent(sender, "messages.no_entries_on_page");
-            return;
-        }
-
-        Optional<Component> playerTemplateOpt = MessageUtils.optionalMiniMessage("messages.player_ip_template");
-        Optional<Component> listTemplateOpt = MessageUtils.optionalMiniMessage("messages.list_player_template");
-
-        if (playerTemplateOpt.isEmpty() || listTemplateOpt.isEmpty()) {
-            MessageUtils.sendMiniMessageIfPresent(sender, "messages.error_loading_message");
-            return;
-        }
-
-        Component playerTemplate = playerTemplateOpt.get();
-        String listTemplateRaw = MiniMessage.miniMessage().serialize(listTemplateOpt.get());
-        Component playersBuilder = Component.empty();
-        int number = offset + 1;
-
-        for (Map<String, Object> player : players) {
-            int playerNumber = number++;
-            String nickname = Objects.toString(player.get("nickname"), "Unknown");
-            String ip = Objects.toString(player.get("ip"), "-");
-            String country = Objects.toString(player.get("country"), "-");
-            String state = Objects.toString(player.get("state"), "-");
-            String formattedLastJoin;
-            if (player.get("last_join") instanceof Number num) {
-                long timestamp = num.longValue();
-                Instant instant = Instant.ofEpochMilli(timestamp);
-                ZonedDateTime dateTime = instant.atZone(ZoneId.systemDefault());
-                formattedLastJoin = DateTimeFormatter.ofPattern("HH:mm:ss - dd-MM-yyyy").format(dateTime);
-            } else formattedLastJoin = "00:00:00 - 00-00-0000";
-
-            Component playerLine = playerTemplate
-                    .replaceText(builder -> builder.matchLiteral("%number%")
-                            .replacement(Component.text(playerNumber)))
-                    .replaceText(builder -> builder.matchLiteral("%time%")
-                            .replacement(Component.text(formattedLastJoin)))
-                    .replaceText(builder -> builder.matchLiteral("%time_sign%")
-                            .replacement(MessageUtils.optionalMiniMessage("messages.time_sign").orElse(Component.text("⌚"))
-                                    .clickEvent(ClickEvent.copyToClipboard(formattedLastJoin))))
-                    .replaceText(builder -> builder.matchLiteral("%player%")
-                            .replacement(Component.text(nickname)
-                                    .clickEvent(ClickEvent.copyToClipboard(nickname))))
-                    .replaceText(builder -> builder.matchLiteral("%ip%")
-                            .replacement(Component.text(ip)
-                                    .clickEvent(ClickEvent.copyToClipboard(ip))))
-                    .replaceText(builder -> builder.matchLiteral("%country%")
-                            .replacement(Component.text(country)
-                                    .clickEvent(ClickEvent.copyToClipboard(country))))
-                    .replaceText(builder -> builder.matchLiteral("%state%")
-                            .replacement(Component.text(state)
-                                    .clickEvent(ClickEvent.copyToClipboard(state))));
-
-            playersBuilder = playersBuilder.append(playerLine);
-        }
-
-        List<Map<String, Object>> resultTotalPage = dbDriver.selectData("COUNT(*) AS total", "players", where, countParams.toArray());
-        int totalPages = 1;
-        if (!resultTotalPage.isEmpty()) {
-            Object countValue = resultTotalPage.get(0).get("total");
-            if (countValue instanceof Number num) {
-                int total = num.intValue();
-                totalPages = (int) Math.ceil((double) total / PAGE_SIZE);
-            }
-        }
-
-        Component finalPlayersBuilder = playersBuilder;
         int finalPage = page;
-        int finalTotalPages = totalPages;
+        dbDriver.selectData("nickname, ip, country, state, last_join", "players", "%s ORDER BY nickname ASC LIMIT ? OFFSET ?".formatted(where), rsPlayers -> {
+            if (rsPlayers.isEmpty()) {
+                MessageUtils.sendMiniMessageIfPresent(sender, "messages.no_entries_on_page");
+                return;
+            }
 
-        StringBuilder filterString = new StringBuilder();
-        for (Map.Entry<String, String> entry : filters.entrySet()) {
-            filterString.append(entry.getKey()).append(":").append(entry.getValue()).append(" ");
-        }
-        String filtersRaw = filterString.toString().trim();
+            Optional<Component> playerTemplateOpt = MessageUtils.optionalMiniMessage("messages.player_ip_template");
+            Optional<Component> listTemplateOpt = MessageUtils.optionalMiniMessage("messages.list_player_template");
 
-        listTemplateRaw = listTemplateRaw
-                .replace("%prev_page%", filtersRaw + " " + (finalPage <= 1 ? "1" : finalPage - 1))
-                .replace("%next_page%", filtersRaw + " " + (finalPage >= finalTotalPages ? finalTotalPages : finalPage + 1));
-        Component listTemplate = MiniMessage.miniMessage().deserialize(listTemplateRaw)
-                .replaceText(builder -> builder.matchLiteral("%players%").replacement(finalPlayersBuilder))
-                .replaceText(builder -> builder.matchLiteral("%current%").replacement(Component.text(finalPage)))
-                .replaceText(builder -> builder.matchLiteral("%total%").replacement(Component.text(finalTotalPages)));
+            if (playerTemplateOpt.isEmpty() || listTemplateOpt.isEmpty()) {
+                MessageUtils.sendMiniMessageIfPresent(sender, "messages.error_loading_message");
+                return;
+            }
 
-        sender.sendMessage(listTemplate);
+            Component playerTemplate = playerTemplateOpt.get();
+            Component playersBuilder = Component.empty();
+            int number = offset + 1;
+
+            for (Map<String, Object> player : rsPlayers) {
+                int playerNumber = number++;
+                String nickname = Objects.toString(player.get("nickname"), "Unknown");
+                String ip = Objects.toString(player.get("ip"), "-");
+                String country = Objects.toString(player.get("country"), "-");
+                String state = Objects.toString(player.get("state"), "-");
+                String formattedLastJoin;
+                if (player.get("last_join") instanceof Number num) {
+                    long timestamp = num.longValue();
+                    Instant instant = Instant.ofEpochMilli(timestamp);
+                    ZonedDateTime dateTime = instant.atZone(ZoneId.systemDefault());
+                    formattedLastJoin = DateTimeFormatter.ofPattern("HH:mm:ss - dd-MM-yyyy").format(dateTime);
+                } else formattedLastJoin = "00:00:00 - 00-00-0000";
+
+                Component playerLine = playerTemplate
+                        .replaceText(builder -> builder.matchLiteral("%number%")
+                                .replacement(Component.text(playerNumber)))
+                        .replaceText(builder -> builder.matchLiteral("%time%")
+                                .replacement(Component.text(formattedLastJoin)))
+                        .replaceText(builder -> builder.matchLiteral("%time_sign%")
+                                .replacement(MessageUtils.optionalMiniMessage("messages.time_sign").orElse(Component.text("⌚"))
+                                        .clickEvent(ClickEvent.copyToClipboard(formattedLastJoin))))
+                        .replaceText(builder -> builder.matchLiteral("%player%")
+                                .replacement(Component.text(nickname)
+                                        .clickEvent(ClickEvent.copyToClipboard(nickname))))
+                        .replaceText(builder -> builder.matchLiteral("%ip%")
+                                .replacement(Component.text(ip)
+                                        .clickEvent(ClickEvent.copyToClipboard(ip))))
+                        .replaceText(builder -> builder.matchLiteral("%country%")
+                                .replacement(Component.text(country)
+                                        .clickEvent(ClickEvent.copyToClipboard(country))))
+                        .replaceText(builder -> builder.matchLiteral("%state%")
+                                .replacement(Component.text(state)
+                                        .clickEvent(ClickEvent.copyToClipboard(state))));
+
+                playersBuilder = playersBuilder.append(playerLine);
+            }
+
+            Component finalPlayersBuilder = playersBuilder;
+            dbDriver.selectData("COUNT(*) AS total", "players", where, rsTotalPage -> {
+                int totalPages = 1;
+                if (!rsTotalPage.isEmpty()) {
+                    Object countValue = rsTotalPage.get(0).get("total");
+                    if (countValue instanceof Number num) {
+                        int total = num.intValue();
+                        totalPages = (int) Math.ceil((double) total / PAGE_SIZE);
+                    }
+                }
+
+                StringBuilder filterString = new StringBuilder();
+                for (Map.Entry<String, String> entry : filters.entrySet()) {
+                    filterString.append(entry.getKey()).append(":").append(entry.getValue()).append(" ");
+                }
+                String filtersRaw = filterString.toString().trim();
+                int finalTotalPages = totalPages;
+
+                String listTemplateRaw = MiniMessage.miniMessage().serialize(listTemplateOpt.get())
+                        .replace("%prev_page%", filtersRaw + " " + (finalPage <= 1 ? "1" : finalPage - 1))
+                        .replace("%next_page%", filtersRaw + " " + (finalPage >= finalTotalPages ? finalTotalPages : finalPage + 1));
+                Component listTemplate = MiniMessage.miniMessage().deserialize(listTemplateRaw)
+                        .replaceText(builder -> builder.matchLiteral("%players%").replacement(finalPlayersBuilder))
+                        .replaceText(builder -> builder.matchLiteral("%current%").replacement(Component.text(finalPage)))
+                        .replaceText(builder -> builder.matchLiteral("%total%").replacement(Component.text(finalTotalPages)));
+
+                sender.sendMessage(listTemplate);
+            }, countParams.toArray());
+        }, queryParams.toArray());
     }
 
     @Override

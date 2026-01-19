@@ -2,12 +2,12 @@ package org.mousejava.ipviewer.handlers;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.mousejava.ipviewer.scheduler.Scheduler;
 import org.mousejava.ipviewer.utils.DatabaseDriver;
 
 import java.io.InputStream;
@@ -15,7 +15,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -35,7 +34,7 @@ public class UpdateDatabaseHandler implements Listener {
         String nickname = player.getName();
         String ip = player.getAddress().getAddress().getHostAddress();
 
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+        Scheduler.runAsync(() -> {
             try {
                 URL url = new URL("http://ip-api.com/json/%s?fields=country,regionName,status,message".formatted(ip));
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -57,24 +56,24 @@ public class UpdateDatabaseHandler implements Listener {
                     String state = json.get("regionName").getAsString();
                     long joinTimestamp = System.currentTimeMillis();
 
-                    List<Map<String, Object>> result = dbDriver.selectData("uuid", "players", "WHERE uuid = ?", uuid);
+                    dbDriver.selectData("uuid", "players", "WHERE uuid = ?", rs -> {
+                        Map<String, Object> data = new HashMap<>();
+                        data.put("nickname", nickname);
+                        data.put("ip", ip);
+                        data.put("country", country);
+                        data.put("state", state);
+                        data.put("last_join", joinTimestamp);
 
-                    Map<String, Object> data = new HashMap<>();
-                    data.put("nickname", nickname);
-                    data.put("ip", ip);
-                    data.put("country", country);
-                    data.put("state", state);
-                    data.put("last_join", joinTimestamp);
-
-                    if (result.isEmpty()) {
-                        data.put("uuid", uuid);
-                        dbDriver.insertData("players", data);
-                    } else {
-                        dbDriver.updateData("players", data, "uuid = ?", uuid);
-                    }
+                        if (rs.isEmpty()) {
+                            data.put("uuid", uuid);
+                            dbDriver.insertData("players", data);
+                        } else {
+                            dbDriver.updateData("players", data, "uuid = ?", uuid);
+                        }
+                    }, uuid);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                plugin.getLogger().log(Level.SEVERE, "Request error", e);
             }
         });
     }
