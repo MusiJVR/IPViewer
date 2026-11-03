@@ -11,6 +11,9 @@ load: POSTWORLD
 authors: [ ${authors} ]
 
 permissions:
+  ipviewer.update_listener:
+    description: Permission to receive update notifications
+    default: op
   ipviewer.use:
     description: Permission to use commands
     default: op

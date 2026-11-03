@@ -77,12 +77,13 @@ All messages in the config use the [MiniMessage](https://docs.advntr.dev/minimes
 
 The plugin has permissions:
 
-| **Permissions**    | **Meaning**                         | **Default access** |
-|--------------------|-------------------------------------|--------------------|
-| `ipviewer.use`     | Permission to use commands          | `op`               |
-| `ipviewer.help`    | Permission to use command `help`    | `op`               |
-| `ipviewer.reload`  | Permission to use command `reload`  | `op`               |
-| `ipviewer.list`    | Permission to use command `list`    | `op`               |
+| **Permissions**            | **Meaning**                                  | **Default access** |
+|----------------------------|----------------------------------------------|--------------------|
+| `ipviewer.update_listener` | Permission to receive update `notifications` | `op`               |
+| `ipviewer.use`             | Permission to use commands                   | `op`               |
+| `ipviewer.help`            | Permission to use command `help`             | `op`               |
+| `ipviewer.reload`          | Permission to use command `reload`           | `op`               |
+| `ipviewer.list`            | Permission to use command `list`             | `op`               |
 
 ## ❗ Issues
 

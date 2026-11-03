@@ -9,7 +9,15 @@ database:
   maximum_pool_size: 10
   connection_timeout_ms: 10000
 
+# Notify players with 'advancedwaypoints.update_listener' permission about plugin updates
+send_update_notifications: true
+
 messages:
+  new_version_available: "<b><color:#fbd300>IPViewer</color></b> <color:#c4b6a4>has been updated!</color>
+  <br><color:#fbd300>New version:</color> <click:open_url:'<url>'><hover:show_text:'Visit Modrinth page'><b><color:#c4b6a4><new_version></color></b></hover></click>
+  <br><color:#fbd300>Current version:</color> <b><color:#c4b6a4><current_version></color></b>
+  "
+
   ipviewer:
     usage: "<color:#fbd300>Usage:</color> <color:#c4b6a4><hover:show_text:'Click to use /ipv'><click:suggest_command:'/ipv '>/ipv <action> [args]</click></hover></color>"
 
