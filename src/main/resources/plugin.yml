@@ -1,18 +1,25 @@
-name: IPViewer
-version: '${project.version}'
-main: org.mousejava.ipviewer.IPViewer
-api-version: '1.20'
+name: '${name}'
+prefix: '${prefix}'
+description: '${description}'
+version: '${version}'
+
+main: com.mousejava.ipviewer.IPViewer
+api-version: '${apiVersion}'
 folia-supported: true
-authors: [ MouseJava ]
-description: Plugin for management IP address
-commands:
-  ipviewer:
-    description: This command allows you to use the plugin
-    permission: ipviewer.ipviewer
-    usage: /<command> <args>
-    aliases:
-      - ipv
+load: POSTWORLD
+
+authors: [ ${authors} ]
+
 permissions:
-  ipviewer.ipviewer:
-    description: Permission to use command ipviewer
+  ipviewer.use:
+    description: Permission to use commands
+    default: op
+  ipviewer.help:
+    description: Permission to use command help
+    default: op
+  ipviewer.reload:
+    description: Permission to use command reload
+    default: op
+  ipviewer.list:
+    description: Permission to use command list
     default: op

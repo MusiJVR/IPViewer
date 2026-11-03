@@ -1,31 +1,24 @@
-<p align="center">
-   <a href="https://github.com/MusiJVR/IPViewer" target="_blank">
-      <img width="180" height="180" src="https://github.com/MusiJVR/IPViewer/blob/main/docs/icon.png" alt="IPViewer">
-   </a>
-</p>
+<div align="center">
 
-<h1 align="center">IPViewer</h1>
+![Logo](docs/icon.png)
 
-<p align="center">
-    <a href="https://papermc.io/" target="_blank">
-        <img src="https://img.shields.io/badge/Paper-1.20%2B-blue?style=flat-square&logo=spigotmc" alt="PaperMC">
-    </a>
-    <a href="https://modrinth.com/plugin/ipviewer" target="_blank">
-        <img src="https://img.shields.io/badge/Modrinth-IPViewer-1bd96a?style=flat-square&logo=modrinth" alt="Modrinth">
-    </a>
-    <a href="https://docs.advntr.dev/minimessage/" target="_blank">
-        <img src="https://img.shields.io/badge/MiniMessage-Adventure-blueviolet?style=flat-square" alt="MiniMessage">
-    </a>
-    <a href="https://www.java.com/" target="_blank">
-        <img src="https://img.shields.io/badge/Java-21+-red?style=flat-square&logo=java" alt="Java">
-    </a>
-</p>
+[![GitHub Release](https://img.shields.io/github/v/release/MusiJVR/IPViewer?style=for-the-badge)](https://github.com/MusiJVR/IPViewer/releases)
+[![Modrinth Downloads](https://img.shields.io/modrinth/dt/4E5j5m04?style=for-the-badge&label=Modrinth)](https://modrinth.com/plugin/IPViewer)
+[![GitHub License](https://img.shields.io/github/license/MusiJVR/IPViewer?style=for-the-badge)](https://github.com/MusiJVR/IPViewer/blob/main/LICENSE)
+
+[![Bukkit](https://badges.penpow.dev/badges/supported/bukkit/compact-minimal.svg)](https://bukkit.org/)
+[![Spigot](https://badges.penpow.dev/badges/supported/spigot/compact-minimal.svg)](https://spigotmc.org/)
+[![Paper](https://badges.penpow.dev/badges/supported/paper/compact-minimal.svg)](https://papermc.io/software/paper)
+[![Folia](https://badges.penpow.dev/badges/supported/folia/compact-minimal.svg)](https://papermc.io/software/folia)
+[![Purpur](https://badges.penpow.dev/badges/supported/purpur/compact-minimal.svg)](https://purpurmc.org/)
+
+</div>
 
 ## 🌐 Overview
 
-**IPViewer** is a plugin for [Paper](https://papermc.io/) Minecraft servers version _1.20_ and above, designed for server administrators and moderators. It provides a simple way to view players' IP addresses, helping with server management and detecting ban evasion or alt accounts.
+**IPViewer** is a plugin that provides a simple way to view players' IP addresses, helping with server management and detecting ban evasion or multi-accounts.
 
-<blockquote>All technical settings and features presented here are for the latest version of the plugin and will not always work on older versions.</blockquote>
+> **Note:** All technical settings and features described here are intended for the latest version of the plugin and may not be fully compatible with older versions.
 
 ## 🔍 Features
 
@@ -37,9 +30,9 @@
 ## 📜 Commands
 
 Here are all the commands that can be used in the plugin:
-* `/ipv help` - Displays all available plugin commands
-* `/ipv reload` - Reloads the plugin configuration
-* `/ipv list <filters (optional)>` - Shows a list of players with optional filters (e.g., by IP or join time)
+* `/ipv help` - This command allows you to display all possible plugin commands
+* `/ipv reload` - This command allows you to reload the plugin config
+* `/ipv list [filters]` - This command allows you to browse the list of players with optional filters
 
 ## 🪪 Filters for `/ipv list`
 
@@ -80,13 +73,16 @@ The config file is generated on first launch and modify it to adjust output form
 
 All messages in the config use the [MiniMessage](https://docs.advntr.dev/minimessage/) format, which allows rich text formatting (colors, gradients, bold, etc.). You can preview and create formatted messages using the [MiniMessage Viewer](https://webui.advntr.dev/).
 
-## ⚙️ Settings for Developers and Administrators
+## ⚙️ Settings for developers or administrators
 
 The plugin has permissions:
 
-| **Permissions**             | **Meaning**                           |
-|-----------------------------|---------------------------------------|
-| `ipviewer.ipviewer`         | Grants access to the `/ipv` command   |
+| **Permissions**    | **Meaning**                         | **Default access** |
+|--------------------|-------------------------------------|--------------------|
+| `ipviewer.use`     | Permission to use commands          | `op`               |
+| `ipviewer.help`    | Permission to use command `help`    | `op`               |
+| `ipviewer.reload`  | Permission to use command `reload`  | `op`               |
+| `ipviewer.list`    | Permission to use command `list`    | `op`               |
 
 ## ❗ Issues
 
@@ -97,3 +93,11 @@ Please leave messages about any errors you find [here](https://github.com/MusiJV
 - Page on [Modrinth](https://modrinth.com/plugin/ipviewer)
 - Page on [GitHub](https://github.com/MusiJVR/IPViewer)
 - Page on [Discord](https://discord.gg/xY8WJt7VGr)
+
+## 📊 Metrics
+
+<div align="center">
+
+[![Metrics](https://api.mousejava.com/api/plugin/metrics/35113)](https://bstats.org/plugin/bukkit/IPViewer/35113)
+
+</div>

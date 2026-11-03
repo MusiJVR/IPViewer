@@ -1,36 +1,38 @@
-package org.mousejava.ipviewer.handlers;
+package com.mousejava.ipviewer.listener;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.mousejava.ipviewer.database.repository.PlayersRepository;
+import com.mousejava.ipviewer.data.PlayerProfile;
+import com.mousejava.ipviewer.util.Scheduler;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.mousejava.ipviewer.scheduler.Scheduler;
-import org.mousejava.ipviewer.utils.DatabaseDriver;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.util.UUID;
 import java.util.logging.Level;
 
-public class UpdateDatabaseHandler implements Listener {
+public class PlayerJoinListener implements Listener {
     private final JavaPlugin plugin;
-    private final DatabaseDriver dbDriver;
+    private final PlayersRepository playersRepository;
 
-    public UpdateDatabaseHandler(JavaPlugin plugin, DatabaseDriver dbDriver) {
+    public PlayerJoinListener(JavaPlugin plugin, PlayersRepository playersRepository) {
         this.plugin = plugin;
-        this.dbDriver = dbDriver;
+        this.playersRepository = playersRepository;
     }
 
     @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event) {
+    public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        String uuid = player.getUniqueId().toString();
+        UUID uuid = player.getUniqueId();
         String nickname = player.getName();
         String ip = player.getAddress().getAddress().getHostAddress();
 
@@ -54,23 +56,13 @@ public class UpdateDatabaseHandler implements Listener {
 
                     String country = json.get("country").getAsString();
                     String state = json.get("regionName").getAsString();
-                    long joinTimestamp = System.currentTimeMillis();
+                    Timestamp joinTimestamp = Timestamp.from(Instant.now());
 
-                    dbDriver.selectData("uuid", "players", "WHERE uuid = ?", rs -> {
-                        Map<String, Object> data = new HashMap<>();
-                        data.put("nickname", nickname);
-                        data.put("ip", ip);
-                        data.put("country", country);
-                        data.put("state", state);
-                        data.put("last_join", joinTimestamp);
-
-                        if (rs.isEmpty()) {
-                            data.put("uuid", uuid);
-                            dbDriver.insertData("players", data);
-                        } else {
-                            dbDriver.updateData("players", data, "uuid = ?", uuid);
-                        }
-                    }, uuid);
+                    PlayerProfile playerProfile = new PlayerProfile(uuid, nickname, ip, country, state, joinTimestamp);
+                    playersRepository.findByUuid(uuid).ifPresentOrElse(
+                            ignore -> playersRepository.update(playerProfile),
+                            () -> playersRepository.register(playerProfile)
+                    );
                 }
             } catch (Exception e) {
                 plugin.getLogger().log(Level.SEVERE, "Request error", e);
