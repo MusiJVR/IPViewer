@@ -41,14 +41,14 @@ Here are all the commands that can be used in the plugin:
 
 The `/ipv list` command supports flexible filters to help you search and organize player IP data. All filters can be used together in a single command.
 
-| **Filter**                          | **Description**                                                                              |
-|-------------------------------------|----------------------------------------------------------------------------------------------|
-| `page:<number>` or just `<number>`  | Displays a specific results page (e.g., `/ipv list 2` or `/ipv list page:2`)                 |
-| `player:<text>`                     | Filters results by player name (supports partial matches and wildcards)                      |
-| `ip:<text>`                         | Filters by IP address (supports partial matches and wildcards)                               |
-| `country:<text>`                    | Filters by country name or code (e.g., `country:United States`)                              |
-| `state:<text>`                      | Filters by region or state (useful for more granular IP geolocation, e.g., `state:New York`) |
-| `time:<duration>`                   | Shows only players seen within a time range (e.g., `time:24h`, `time:30m`)                   |
+| **Filter**                          | **Description**                                                                                |
+|-------------------------------------|------------------------------------------------------------------------------------------------|
+| `page:<number>` or just `<number>`  | Displays a specific results page (e.g., `/ipv list 2` or `/ipv list page:2`)                   |
+| `player:<text>`                     | Filters results by player name (supports partial matches and wildcards)                        |
+| `ip:<text>`                         | Filters by IP address (supports partial matches and wildcards)                                 |
+| `country:<text>`                    | Filters by country name or code (e.g., `country:"United States"`)                              |
+| `state:<text>`                      | Filters by region or state (useful for more granular IP geolocation, e.g., `state:"New York"`) |
+| `time:<duration>`                   | Shows only players seen within a time range (e.g., `time:24h`, `time:30m`)                     |
 
 ### 🧠 Wildcards
 
