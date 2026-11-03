@@ -2,13 +2,15 @@ name: '${name}'
 prefix: '${prefix}'
 description: '${description}'
 version: '${version}'
+authors: [ ${authors} ]
 
 main: com.mousejava.ipviewer.IPViewer
 api-version: '${apiVersion}'
 folia-supported: true
 load: POSTWORLD
 
-authors: [ ${authors} ]
+libraries:
+${libraries}
 
 permissions:
   ipviewer.update_listener:
@@ -22,6 +24,9 @@ permissions:
     default: op
   ipviewer.reload:
     description: Permission to use command reload
+    default: op
+  ipviewer.script:
+    description: Permission to use command script
     default: op
   ipviewer.list:
     description: Permission to use command list

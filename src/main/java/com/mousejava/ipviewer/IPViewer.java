@@ -9,6 +9,7 @@ import com.mousejava.ipviewer.database.dialect.*;
 import com.mousejava.ipviewer.database.repository.*;
 import com.mousejava.ipviewer.listener.*;
 import com.mousejava.ipviewer.service.BStatsMetricsService;
+import com.mousejava.ipviewer.service.GeoLocationScriptService;
 import com.mousejava.ipviewer.service.UpdateCheckerService;
 import com.mousejava.ipviewer.util.*;
 import io.papermc.paper.command.brigadier.Commands;
@@ -26,6 +27,7 @@ public final class IPViewer extends JavaPlugin {
 
     private DatabaseManager<SqlDialect> database;
     private PlayersRepository playersRepository;
+    private GeoLocationScriptService scriptService;
 
     @Override
     public void onEnable() {
@@ -34,6 +36,7 @@ public final class IPViewer extends JavaPlugin {
         MessageUtil.init(this);
         BStatsMetricsService.init(this, SERVICE_ID);
         UpdateCheckerService.init(this, PROJECT_ID);
+        scriptService = new GeoLocationScriptService(this);
 
         database = initializeDatabase();
 
@@ -49,6 +52,9 @@ public final class IPViewer extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (scriptService != null)
+            scriptService.close();
+
         if (database != null && database.isRunning())
             database.close();
     }
@@ -66,7 +72,7 @@ public final class IPViewer extends JavaPlugin {
     private void registerListeners() {
         List<Listener> listeners = List.of(
                 new UpdateNotifyListener(this),
-                new PlayerJoinListener(this, playersRepository)
+                new PlayerJoinListener(this, playersRepository, scriptService)
         );
 
         PluginManager pluginManager = getServer().getPluginManager();
@@ -75,7 +81,7 @@ public final class IPViewer extends JavaPlugin {
 
     private void registerCommands() {
         List<ICommand> commands = List.of(
-                new IPViewerCommand(this, playersRepository)
+                new IPViewerCommand(this, playersRepository, scriptService)
         );
 
         getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, event -> {

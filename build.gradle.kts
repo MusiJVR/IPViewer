@@ -20,7 +20,10 @@ dependencies {
     paperweight.paperDevBundle(libs.versions.paper.get())
 
     implementation(libs.bstats)
-    implementation(libs.hikaricp)
+
+    compileOnly(libs.hikaricp)
+    compileOnly(libs.polyglot)
+    compileOnly(libs.polyglot.js)
 }
 
 configurations.runtimeClasspath {
@@ -254,15 +257,27 @@ tasks {
     }
 
     processResources {
+        fun library(dependency: MinimalExternalModuleDependency): String =
+            "${dependency.module.group}:${dependency.module.name}:${dependency.versionConstraint.requiredVersion}"
+
+        val libraries = listOf(
+            library(libs.bstats.get()),
+            library(libs.hikaricp.get()),
+            library(libs.polyglot.asProvider().get()),
+            library(libs.js.language.get())
+        ).joinToString("\n") { "  - '$it'" }
+
         val props = mapOf(
             "name" to project.name,
             "prefix" to project.property("prefix"),
             "description" to project.description,
             "version" to version,
+            "authors" to project.property("authors"),
             "apiVersion" to project.property("api.version"),
-            "authors" to project.property("authors")
+            "libraries" to libraries
         )
 
+        inputs.properties(props)
         filesMatching("plugin.yml") {
             expand(props)
         }

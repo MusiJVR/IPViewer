@@ -8,6 +8,9 @@ paperweight = "2.0.0-beta.24"
 runpaper = "3.1.0"
 bstats = "3.2.1"
 hikaricp = "7.1.0"
+polyglot = "25.4.4.1.1"
+polyglot-js = "25.4.4.1.1"
+js-language = "25.4.4.1.1"
 
 [plugins]
 shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
@@ -17,3 +20,6 @@ run-paper = { id = "xyz.jpenilla.run-paper", version.ref = "runpaper" }
 [libraries]
 bstats = { module = "org.bstats:bstats-bukkit", version.ref = "bstats" }
 hikaricp = { module = "com.zaxxer:HikariCP", version.ref = "hikaricp" }
+polyglot = { module = "org.graalvm.polyglot:polyglot", version.ref = "polyglot" }
+polyglot-js = { module = "org.graalvm.polyglot:js", version.ref = "polyglot-js" }
+js-language = { module = "org.graalvm.js:js-language", version.ref = "js-language" }

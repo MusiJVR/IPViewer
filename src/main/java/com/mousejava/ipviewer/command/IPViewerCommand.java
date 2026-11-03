@@ -13,6 +13,7 @@ import com.mousejava.ipviewer.data.ListFilter;
 import com.mousejava.ipviewer.database.repository.PlayersRepository;
 import com.mousejava.ipviewer.database.api.DatabaseException;
 import com.mousejava.ipviewer.data.PlayerProfile;
+import com.mousejava.ipviewer.service.GeoLocationScriptService;
 import com.mousejava.ipviewer.util.Scheduler;
 import com.mousejava.ipviewer.util.MessageUtil;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
@@ -25,6 +26,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.IOException;
+import java.nio.file.NoSuchFileException;
 import java.sql.Timestamp;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -44,10 +47,12 @@ public class IPViewerCommand implements ICommand {
 
     private final JavaPlugin plugin;
     private final PlayersRepository playersRepository;
+    private final GeoLocationScriptService scriptService;
 
-    public IPViewerCommand(JavaPlugin plugin, PlayersRepository playersRepository) {
+    public IPViewerCommand(JavaPlugin plugin, PlayersRepository playersRepository, GeoLocationScriptService scriptService) {
         this.plugin = plugin;
         this.playersRepository = playersRepository;
+        this.scriptService = scriptService;
     }
 
     @Override
@@ -56,6 +61,7 @@ public class IPViewerCommand implements ICommand {
                 .then(buildHelp())
                 .then(buildReload())
                 .then(buildList())
+                .then(buildScript())
                 .build();
     }
 
@@ -95,6 +101,60 @@ public class IPViewerCommand implements ICommand {
     private int executeReload(CommandContext<CommandSourceStack> ctx, CommandSender sender) {
         plugin.reloadConfig();
         MessageUtil.sendMiniMessageIfPresent(sender, "messages.ipviewer.reload.reload_successfully");
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private CompletableFuture<Suggestions> suggestScripts(CommandContext<CommandSourceStack> ctx, SuggestionsBuilder builder) {
+        try {
+            scriptService.listScripts().forEach(file -> {
+                if (file.toLowerCase(Locale.ROOT).startsWith(builder.getRemainingLowerCase()))
+                    builder.suggest(file);
+            });
+        } catch (IOException e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to list GeoIP scripts", e);
+        }
+
+        return builder.buildFuture();
+    }
+
+    private LiteralArgumentBuilder<CommandSourceStack> buildScript() {
+        return Cmd.senderCommand("script", "ipviewer.script", "messages.ipviewer.script.usage")
+                .then(Cmd.senderCommand("generate", this::executeScriptGenerate))
+                .then(Cmd.senderCommand("set", "messages.ipviewer.script.usage")
+                        .then(Cmd.executesSender(Cmd.argument("file", StringArgumentType.string(), this::suggestScripts),
+                                this::executeScriptSet)));
+    }
+
+    private int executeScriptGenerate(CommandContext<CommandSourceStack> ctx, CommandSender sender) {
+        try {
+            scriptService.generateDefaultScript();
+            MessageUtil.sendMiniMessageIfPresent(sender, "messages.ipviewer.script.generated");
+            return Command.SINGLE_SUCCESS;
+        } catch (IOException e) {
+            plugin.getLogger().log(Level.SEVERE, "Failed to generate the default GeoIP script", e);
+            MessageUtil.sendMiniMessageIfPresent(sender, "messages.ipviewer.script.generate_failed");
+            return Command.SINGLE_SUCCESS;
+        }
+    }
+
+    private int executeScriptSet(CommandContext<CommandSourceStack> ctx, CommandSender sender) {
+        String file = StringArgumentType.getString(ctx, "file");
+        if (!GeoLocationScriptService.isValidScriptName(file)) {
+            MessageUtil.sendMiniMessageIfPresent(sender, "messages.ipviewer.script.invalid_filename");
+            return Command.SINGLE_SUCCESS;
+        }
+
+        try {
+            scriptService.setSelectedScript(file);
+            MessageUtil.sendMiniMessageIfPresent(sender, "messages.ipviewer.script.selected", Placeholder.unparsed("file", file));
+            return Command.SINGLE_SUCCESS;
+        } catch (NoSuchFileException e) {
+            MessageUtil.sendMiniMessageIfPresent(sender, "messages.ipviewer.script.not_found", Placeholder.unparsed("file", file));
+        } catch (IOException e) {
+            plugin.getLogger().log(Level.SEVERE, "Failed to save the selected GeoIP script", e);
+            MessageUtil.sendMiniMessageIfPresent(sender, "messages.ipviewer.script.save_failed");
+        }
+
         return Command.SINGLE_SUCCESS;
     }
 

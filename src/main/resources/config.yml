@@ -9,6 +9,9 @@ database:
   maximum_pool_size: 10
   connection_timeout_ms: 10000
 
+# Path for the GeoIP script
+script_geo_location: 'default.js'
+
 # Notify players with 'advancedwaypoints.update_listener' permission about plugin updates
 send_update_notifications: true
 
@@ -23,6 +26,15 @@ messages:
 
     reload:
       reload_successfully: '<color:#fbd300>Notification</color> <color:#c4b6a4>Plugin configuration successfully reloaded!</color>'
+
+    script:
+      usage: "<color:#fbd300>Usage:</color> <color:#c4b6a4><hover:show_text:'/ipv script'><click:suggest_command:'/ipv script '>/ipv script <action> [args]</click></hover></color>"
+      generated: "<color:#fbd300>Notification</color> <color:#c4b6a4>Default script regenerated: <hover:show_text:'Click to copy path'><click:copy_to_clipboard:'scripts/default.js'>scripts/default.js</click></hover>. The selected script has not changed.</color>"
+      selected: '<color:#fbd300>Notification</color> <color:#c4b6a4>GeoIP script set to <file>. Changes apply on the next player join.</color>'
+      invalid_filename: '<color:#ff5555>Use a filename ending in .js, starting with a letter, digit, underscore or hyphen. Only Latin letters, digits, dots, underscores and hyphens are allowed; paths are not allowed.</color>'
+      not_found: '<color:#ff5555>Script <file> was not found in the scripts folder.</color>'
+      generate_failed: '<color:#ff5555>Could not generate the default GeoIP script. Check the server log.</color>'
+      save_failed: '<color:#ff5555>Could not save the selected GeoIP script. Check the server log.</color>'
 
     list:
       usage: "<color:#fbd300>Usage:</color> <color:#c4b6a4><hover:show_text:'/ipv list'><click:suggest_command:'/ipv list '>/ipv list [filters]</click></hover></color>"
@@ -45,9 +57,14 @@ messages:
     <color:#fbd300>Description:</color> <color:#c4b6a4>This command allows you to reload the plugin config</color>
     
     
+    <color:#fbd300>Command:</color> <color:#c4b6a4><hover:show_text:'Click to use command'><click:suggest_command:'/ipv script '>/ipv script <action> [args]</click></hover></color>
+
+    <color:#fbd300>Description:</color> <color:#c4b6a4>This command allows you to manage the GeoIP script</color>
+    
+    
     <color:#fbd300>Command:</color> <color:#c4b6a4><hover:show_text:'Click to use command'><click:suggest_command:'/ipv list '>/ipv list [filters]</click></hover></color>
       
     <color:#fbd300>Description:</color> <color:#c4b6a4>This command allows you to browse the list of players with optional filters</color>
-      
+
     <b><color:#c4b6a4>⏴----------------------------⏵</color></b>
     "
