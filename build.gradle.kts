@@ -19,6 +19,7 @@ repositories {
 dependencies {
     paperweight.paperDevBundle(libs.versions.paper.get())
 
+    implementation(libs.bstats)
     implementation(libs.hikaricp)
 }
 

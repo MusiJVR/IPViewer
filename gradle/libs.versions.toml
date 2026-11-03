@@ -6,6 +6,7 @@ paper = "1.20.6-R0.1-SNAPSHOT"
 shadow = "9.6.1"
 paperweight = "2.0.0-beta.24"
 runpaper = "3.1.0"
+bstats = "3.2.1"
 hikaricp = "7.1.0"
 
 [plugins]
@@ -14,4 +15,5 @@ paperweight-userdev = { id = "io.papermc.paperweight.userdev", version.ref = "pa
 run-paper = { id = "xyz.jpenilla.run-paper", version.ref = "runpaper" }
 
 [libraries]
+bstats = { module = "org.bstats:bstats-bukkit", version.ref = "bstats" }
 hikaricp = { module = "com.zaxxer:HikariCP", version.ref = "hikaricp" }

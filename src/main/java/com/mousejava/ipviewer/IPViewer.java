@@ -8,6 +8,7 @@ import com.mousejava.ipviewer.database.api.SchemaRepository;
 import com.mousejava.ipviewer.database.dialect.*;
 import com.mousejava.ipviewer.database.repository.*;
 import com.mousejava.ipviewer.listener.*;
+import com.mousejava.ipviewer.service.BStatsMetricsService;
 import com.mousejava.ipviewer.util.*;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
@@ -19,20 +20,17 @@ import java.util.List;
 
 @SuppressWarnings("UnstableApiUsage")
 public final class IPViewer extends JavaPlugin {
-    private static IPViewer instance;
+    private static final int SERVICE_ID = 35113;
+
     private DatabaseManager<SqlDialect> database;
     private PlayersRepository playersRepository;
 
-    public static IPViewer getInstance() {
-        return instance;
-    }
-
     @Override
     public void onEnable() {
-        instance = this;
         saveDefaultConfig();
         Scheduler.init(this);
         MessageUtil.init(this);
+        BStatsMetricsService.init(this, SERVICE_ID);
 
         database = initializeDatabase();
 
